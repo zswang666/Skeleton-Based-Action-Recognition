@@ -1,0 +1,37 @@
+cuda: False #True, currently only False supported
+seed: 1633 # -1 for random
+
+dataset_train: lib.data.weizmann_openpose_dataset
+dataset_train_args:
+  data_path: ./datasets/WEIZMANN/openpose/keypoints
+  ignore_empty_sample: True
+  use_adjacency_matrix: True
+  ignore_uncertain_node: False # only False supported now
+  node_certainty_threshold: 0.3 # only work when ignore_uncertain_node is True
+  primitive_range: 5 # temporal extent for each primitive
+  n_edge_types: 2 # spatial / temporal
+  annotation_dim: 3 # this may depend on the given data, for openpose (x,y,p) p is confidence
+
+batch_size: 10
+workers: 2
+
+model: lib.model.pggnn
+model_args:
+  state_dim: 10 # state dimension in each node
+  n_steps: 8 # number of steps for graph propagation
+  n_primitives: 5 # should be smaller than action class?!
+  rnn_layers: 1
+  rnn_hidden_size: 20
+  output_size: 10 # make sure it is consistent to the dataset
+model_path: ./experiments/genesis_1/ckpt/ep-90.pt # only for training, not for evaluation 
+
+trainer: lib.process.ggnn_trainer
+loss: CrossEntropyLoss
+lr: 0.01
+n_epoch: 100
+verbose: True
+save_dir: ./experiments/genesis_1
+save_step: 10 # unit=epoch
+eval_step: 10 # unit=epoch
+
+tester: lib.process.ggnn_tester

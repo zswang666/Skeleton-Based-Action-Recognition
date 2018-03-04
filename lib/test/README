@@ -1,0 +1,2 @@
+please execute file in the parent directory.
+e.g. python test/test_kinetics_skeleton_dataset.py
